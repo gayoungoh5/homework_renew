@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+
+    <title>Week 4 homework</title>
+    <script>
+        function prepare() {
+            alert('준비중입니다!')
+        }
+    </script>
+    <style>
+        .wrap {
+            margin: auto;
+            width: 600px;
+            padding: 50px;
+            border: solid;
+            border-radius: 20px;
+            margin-top: 20px;
+        }
+
+
+        .img {
+            background-image: url('https://www.seoulfn.com/news/photo/201802/299357_100502_3953.jpg');
+            background-size: cover;
+            background-position: center;
+            width: 500px;
+            height: 400px;
+        }
+
+        .info {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order {
+            text-align: center;
+        }
+
+        h2, h5 {
+            display: inline;
+        }
+
+        .table{
+            font-size: 9px;
+        }
+
+    </style>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            showOrderList();
+        });
+
+        function order() {
+            let name = $('#name').val();
+            let option = $('#option').val();
+            let quantity = $('#quantity').val();
+            let address = $('#address').val();
+            let number = $('#number').val();
+
+            if (name == "") {
+                alert('이름을 입력하세요');
+                return;
+            } else if (option == "종류를 선택하세요!") {
+                alert('옵션을 선택하세요');
+                return;
+            } else if (quantity == "5개까지 가능합니다.") {
+                alert('수량을 선택하세요');
+                return;
+            } else if (address == "") {
+                alert('주소를 입력하세요');
+                return;
+            } else if (number == "") {
+                alert('번호를 입력하세요');
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/order",
+                data: {
+                    name_give: name,
+                    option_give: option,
+                    quantity_give: quantity,
+                    address_give: address,
+                    number_give: number
+                },
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    } else {
+                        alert('주문을 받아오지 못했습니다.')
+                    }
+
+                }
+            })
+        }
+
+        function showOrderList() {
+            $.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        let orders = response["orders"];
+                        // 3. 요청 성공했을 때 리뷰를 올바르게 화면에 나타내기
+                        for (let i = 0; i < orders.length; i++) {
+                            combinationOrder(orders[i]["name"], orders[i]["option"], orders[i]["quantity"],
+                                orders[i]["address"], orders[i]["number"]);
+                        }
+                    } else {
+                        alert('주문을 받아오지 못했습니다.')
+                    }
+
+                }
+            })
+        }
+
+        function combinationOrder(name, option, quantity, address, number) {
+            let tempHtml = `<tr>
+                        <td>${name}</td>
+                        <td>${option}</td>
+                        <td>${quantity}</td>
+                        <td>${address}</td>
+                        <td>${number}</td>
+                    </tr>`;
+            $('#orders-box').append(tempHtml);
+        }
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">SALAD MALL</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">BEST 10</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                   aria-haspopup="true" aria-expanded="false">
+                    Category
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="#">Action</a>
+                    <a class="dropdown-item" href="#">Another action</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">SoldOut</a>
+            </li>
+        </ul>
+        <div class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button onclick="prepare()" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </div>
+    </div>
+</nav>
+<div class="wrap">
+    <div class="img"></div>
+    <div class="info">
+        <h2>샐러드를 팝니다</h2>
+        <h5>가격 : 5,000원/개</h5>
+        <p></p>
+        <p>샐러드 판매합니다. 다양한 종류의 샐러드를 한 번에 선택할 수 있어요! 검색하시면 더 많은 상품 정보를 보실 수 있습니다.</p>
+    </div>
+    <div class="info">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" >성함</span>
+            </div>
+            <input id="name" type="text" class="form-control" aria-label="Sizing example input"
+                   aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="option">옵션</label>
+            </div>
+            <select class="custom-select" id="option">
+                <option selected>종류를 선택하세요!</option>
+                <option value="치킨 시저볼 샐러드">치킨 시저볼 샐러드</option>
+                <option value="치킨 커틀렛">치킨 커틀렛</option>
+                <option value="오리엔탈 쉬림프 볼">오리엔탈 쉬림프 볼</option>
+                <option value="가든 볼 샐러드">가든 볼 샐러드</option>
+                <option value="콥 볼 샐러드">콥 볼 샐러드</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="quantity">수량</label>
+            </div>
+            <select class="custom-select" id="quantity">
+                <option selected>5개까지 가능합니다.</option>
+                <option value="1">1개</option>
+                <option value="2">2개</option>
+                <option value="3">3개</option>
+                <option value="4">4개</option>
+                <option value="5">5개</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">주소</span>
+            </div>
+            <input id="address" type="text" class="form-control" aria-label="Sizing example input"
+                   aria-describedby="inputGroup-sizing-default">
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">번호</span>
+            </div>
+            <input id="number" type="text" class="form-control" aria-label="Sizing example input"
+                   aria-describedby="inputGroup-sizing-default">
+        </div>
+    </div>
+    <div class="order">
+        <button onclick="order()" type="button" class="btn btn-primary">주문하기</button>
+    </div>
+
+    <div class="orders">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">이름</th>
+                <th scope="col">옵션</th>
+                <th scope="col">수량</th>
+                <th scope="col">주소</th>
+                <th scope="col">번호</th>
+            </tr>
+            </thead>
+            <tbody id="orders-box">
+            <tr>
+                <td>홍길동</td>
+                <td>콥 볼 샐러드</td>
+                <td>1</td>
+                <td>서울시 강남구 역삼동</td>
+                <td>010-0000-0000</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="info"></div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"-->
+<!--        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"-->
+<!--        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"-->
+<!--        crossorigin="anonymous"></script>-->
+<!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"-->
+<!--        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"-->
+<!--        crossorigin="anonymous"></script>-->
+</body>
+</html>
